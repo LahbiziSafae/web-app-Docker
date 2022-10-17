@@ -1,0 +1,11 @@
+node {
+stage ('checkout'){
+    git url: 'https://github.com/LahbiziSafae/web-app-Docker'
+}
+stage ('build docker image'){
+    sh 'docker build -t safaelah/py-app:2.1.0 .'
+}
+stage ('Run container'){
+    sh 'docker run -p 8881:5000 -d --name my-app3 safaelah/py-app:2.1.0'
+}
+}
