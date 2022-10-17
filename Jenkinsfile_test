@@ -1,19 +1,11 @@
-node{
- stage('checkout Scm'){
- git credentialsId: 'safae', url: 'https://github.com/LahbiziSafae/web-app-Docker' } //integrate github with jenkins
- 
- stage('build docker image'){
- sh 'docker build -t safaelah/my-app:2.1.0 .'
- } //build of docker image using a Dockerfile in root of the repo git
- 
-  stage('push docker image'){
- withCredentials([usernamePassword(credentialsId: '1d6ffacd-7bfa-4897-877d-61c931ae532e', passwordVariable: 'safaelahpsswd', usernameVariable: 'safaelah')]) {
-    sh "docker login -u ${safaelah} -p ${safaelahpsswd}"
+node {
+stage ('checkout'){
+    git url: 'https://github.com/LahbiziSafae/web-app-Docker'
 }
-sh 'docker push safaelah/my-app:2.1.0'
+stage ('build docker image'){
+    sh 'docker build -t safaelah/py-app:2.1.0 .'
 }
-stage('Run Container on Dev Server'){
- sh 'docker run -p 8881:5000 -d --name my-app3 safaelah/my-app:2.1.0'
- }
+stage ('Run container'){
+    sh 'docker run -p 8881:5000 -d --name my-app3 safaelah/py-app:2.1.0'
 }
-
+}
