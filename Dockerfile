@@ -1,25 +1,27 @@
-FROM alpine:3.5
+FROM python:3.9-slim
 
-# Install Python, pip, and build dependencies
-RUN apk add --no-cache python2 py2-pip build-base
-
-# Upgrade pip
-RUN pip install --upgrade pip
+# Set the working directory
+WORKDIR /usr/src/app
 
 # Copy the requirements file
-COPY requirements.txt /usr/src/app/
+COPY requirements.txt ./
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt --verbose
+# Install build dependencies
+RUN apt-get update && \
+    apt-get install -y build-essential && \
+    pip install --no-cache-dir -r requirements.txt --verbose && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy application files
-COPY app.py /usr/src/app/
-COPY templates/index.html /usr/src/app/templates/
+COPY app.py ./
+COPY templates/index.html ./templates/
 
 # Expose the application port
 EXPOSE 5000
 
 # Set the command to run the application
-CMD ["python", "/usr/src/app/app.py"]
+CMD ["python", "app.py"]
+
 
 
