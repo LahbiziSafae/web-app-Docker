@@ -5,7 +5,8 @@ RUN apk add --update py2-pip
 RUN pip install --upgrade pip
 
 COPY requirements.txt /usr/src/app/
-RUN pip install  --progress=plain -r /usr/src/app/requirements.txt
+RUN apt-get update && apt-get install -y build-essential
+RUN pip install --no-cache-dir -r requirements.txt --verbose
 
 COPY app.py /usr/src/app/
 COPY templates/index.html /usr/src/app/templates/
