@@ -1,33 +1,23 @@
 node {
-    try {
-        stage('Checkout SCM') {
-            git credentialsId: 'gitcredentials', url: 'https://github.com/LahbiziSafae/web-app-Docker'
-        }
-
-        stage('Build Docker Image') {
-            sh 'docker build -t myrep:latest .'
-        }
-
-        stage('Push Docker Image to ECR') {
-            withCredentials([
-                string(credentialsId: 'accesskey', variable: 'AWS_ACCESS_KEY_ID'),
-                string(credentialsId: 'secretkey', variable: 'AWS_SECRET_ACCESS_KEY'),
-                string(credentialsId: 'awsregion', variable: 'AWS_DEFAULT_REGION')
-            ]) {
-                sh """
-                    aws ecr get-login-password --region \${AWS_DEFAULT_REGION} | \
-                    docker login --username AWS --password-stdin 782096716764.dkr.ecr.us-west-2.amazonaws.com
-                """
-                sh "docker tag myrep:latest 782096716764.dkr.ecr.us-west-2.amazonaws.com/myrep:latest"
-                sh "docker push 782096716764.dkr.ecr.us-west-2.amazonaws.com/myrep:latest"
-            }
-        }
-
-        stage('Run Container on Dev Server') {
-            sh 'docker run -p 8888:5051 -d --name my-app-python7 782096716764.dkr.ecr.us-west-2.amazonaws.com/myrep:latest'
-        }
-    } catch (Exception e) {
-        currentBuild.result = 'FAILURE'
-        throw e
+    stage('connexion to git') {
+        git credentialsId: 'jenkins', url: 'https://github.com/LahbiziSafae/web-app-Docker'
+    }
+    stage('build docker image ') {
+        sh 'docker build -t myapp:latest .'
+    }
+    stage('push docker image'){
+        withCredentials([
+             string(credentialsId: 'accesskey', variable: 'accesskey'),
+             string(credentialsId: 'secretkey', variable: 'secretkey'),
+             string(credentialsId: 'awsregion', variable: 'awsregion')
+       ]) {
+             sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 637423632282.dkr.ecr.us-east-1.amazonaws.com"
+             sh "docker tag myapp:latest 637423632282.dkr.ecr.us-east-1.amazonaws.com/myapp:latest"
+             sh "docker push 637423632282.dkr.ecr.us-east-1.amazonaws.com/myapp:latest"
+       }
+    
+    }
+    stage('run container on jenkins server'){
+        sh 'docker run -p 8082:5000 -d --name myapp-python5 637423632282.dkr.ecr.us-east-1.amazonaws.com/myapp:latest'
     }
 }
