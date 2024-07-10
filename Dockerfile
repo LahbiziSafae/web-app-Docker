@@ -1,6 +1,6 @@
 FROM alpine:3.5
 
-# Install Python and pip
+# Install Python, pip, and build dependencies
 RUN apk add --no-cache python2 py2-pip build-base
 
 # Upgrade pip
@@ -21,4 +21,5 @@ EXPOSE 5000
 
 # Set the command to run the application
 CMD ["python", "/usr/src/app/app.py"]
+
 
